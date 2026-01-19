@@ -6,10 +6,10 @@ from datetime import datetime
 
 # --- ASETUKSET ---
 API_KEY = "78c13424469d15c398ab8fa8c832df15"
-# LIITÄ TÄHÄN GOOGLE SHEETS -LINKKISI:
+# GOOGLE SHEETS -LINKKI:
 SHEET_URL = "https://docs.google.com/spreadsheets/d/14Ri5Ox9gHumxU21yIGyKWXPoc5srXaK7joDcwnUuQ6k/edit?usp=sharing"
 
-st.set_page_config(page_title="Pilvi-Kalapäiväkirja", page_icon="🎣")
+st.set_page_config(page_title="Kalapäiväkirja", page_icon="🎣")
 
 # Yhdistetään Google Sheetsiin
 conn = st.connection("gsheets", type=GSheetsConnection)
@@ -32,7 +32,7 @@ def hae_saa(kaupunki):
     except: return None
 
 st.title("🎣 Pilvi-Kalapäiväkirja")
-st.info("Tiedot tallentuvat yhteiseen Google Sheetsiin.")
+st.info("Tiedot tallentuvat Google Sheetsiin.")
 
 with st.form("kalalomake", clear_on_submit=True):
     lajivaihtoehdot = ["Ahven", "Hauki", "Kuha", "Siika","Muu"]
