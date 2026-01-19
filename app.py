@@ -35,7 +35,9 @@ st.title("🎣 Pilvi-Kalapäiväkirja")
 st.info("Tiedot tallentuvat yhteiseen Google Sheetsiin.")
 
 with st.form("kalalomake", clear_on_submit=True):
-    laji = st.text_input("Kalan laji")
+    lajivaihtoehdot = ["Ahven", "Hauki", "Kuha", "Siika","Muu"]
+    
+    laji = st.selectbox("Valitse kalalaji", lajivaihtoehdot)
     paikka = st.text_input("Paikkakunta")
     paino = st.number_input("Paino (g)", min_value=0)
     nappi = st.form_submit_button("Tallenna saalis pilveen")
@@ -75,4 +77,5 @@ try:
     data = conn.read(spreadsheet=SHEET_URL)
     st.dataframe(data, use_container_width=True)
 except:
+
     st.warning("Taulukko on vielä tyhjä tai linkki on väärä.")
