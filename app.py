@@ -31,7 +31,7 @@ def hae_saa(kaupunki):
         }
     except: return None
 
-st.title("🎣 Pilvi-Kalapäiväkirja")
+st.title("Kalapäiväkirja")
 st.info("Tiedot tallentuvat Google Sheetsiin.")
 
 with st.form("kalalomake", clear_on_submit=True):
