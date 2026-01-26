@@ -32,7 +32,7 @@ def hae_saa(kaupunki):
         }
     except: return None
 
-st.title("🎣 Kalapäiväkirja Pro")
+st.title("🎣 Kalapäiväkirja")
 
 with st.form("kalalomake", clear_on_submit=True):
     col1, col2 = st.columns(2)
@@ -52,7 +52,7 @@ with st.form("kalalomake", clear_on_submit=True):
         paino = st.number_input("Suurimman paino (g)", min_value=0, step=10)
     
     huomio = st.text_area("Lisatiedot (vieheet, keli, havainnot)")
-    nappi = st.form_submit_button("Tallenna reissu pilveen")
+    nappi = st.form_submit_button("Tallenna")
 
 if nappi:
     if paikka:
@@ -94,7 +94,7 @@ if nappi:
                     paivitetty_data = paivitetty_data[sarake_jarjestys]
                     
                     conn.update(spreadsheet=SHEET_URL, data=paivitetty_data)
-                    st.success(f"Tallennettu onnistuneesti!")
+                    st.success(f"Tallennettu!")
                     st.cache_data.clear()
     else:
         st.warning("Lisää paikkakunta!")
