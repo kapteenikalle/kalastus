@@ -43,9 +43,9 @@ with st.form("kalalomake", clear_on_submit=True):
         pvm = st.date_input("Päivämäärä", datetime.now())
     
     with col2:
-        alku = st.time_input("Reissu alkoi", datetime.now().replace(hour=8, minute=0).time())
-        loppu = st.time_input("Reissu loppui", datetime.now().time())
-        syonti = st.time_input("Paras syöntiaika", datetime.now().time())
+        alku = st.time_input("Reissu alkoi")
+        loppu = st.time_input("Reissu loppui")
+        syonti = st.time_input("Paras syöntiaika")
         
         st.divider()
         kpl = st.number_input("Kalojen lukumäärä (kpl)", min_value=0, step=1, value=1)
