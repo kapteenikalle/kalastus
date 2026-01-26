@@ -2,7 +2,7 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import requests
 import pandas as pd
-from datetime import datetime, combine
+from datetime import datetime, timedelta, time
 
 # --- ASETUKSET ---
 API_KEY = "78c13424469d15c398ab8fa8c832df15"
@@ -54,8 +54,8 @@ with st.form("kalalomake", clear_on_submit=True):
 if nappi:
     if laji and paikka:
         # Lasketaan kesto tunteina
-        t1 = combine(pvm, alku)
-        t2 = combine(pvm, loppu)
+        t1 = datetime.combine(datetime.now(), alku)
+        t2 = datetime.combine(datetime.now(), loppu)
         kesto = (t2 - t1).total_seconds() / 3600
         
         if kesto < 0:
