@@ -86,7 +86,7 @@ if nappi:
                     }])
                     
                     # Luetaan ja päivitetään
-                    vanha_data = conn.read(spreadsheet=SHEET_URL)
+                    vanha_data = conn.read(spreadsheet=SHEET_URL, ttl=0)
                     paivitetty_data = pd.concat([vanha_data, uusi_rivi], ignore_index=True)
                     
                     # Pidetään vain halutut sarakkeet oikeassa järjestyksessä
