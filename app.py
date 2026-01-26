@@ -2,7 +2,7 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import requests
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, combine
 
 # --- ASETUKSET ---
 API_KEY = "78c13424469d15c398ab8fa8c832df15"
@@ -37,47 +37,60 @@ with st.form("kalalomake", clear_on_submit=True):
     col1, col2 = st.columns(2)
     with col1:
         paikka = st.text_input("Paikkakunta")
-        lajivaihtoehdot = ["Ahven", "Hauki", "Kuha", "Siika", "Ei saalista (MP)", "Muu"]
+        lajivaihtoehdot = ["Ahven", "Hauki", "Kuha", "Siika", "Ei saalista", "Muu"]
         laji = st.selectbox("Pääasiallinen laji", lajivaihtoehdot)
     
     with col2:
+        # Aloitus- ja lopetusajat
+        alku = st.time_input("Reissu alkoi", datetime.now().replace(hour=8, minute=0).time())
+        loppu = st.time_input("Reissu loppui", datetime.now().time())
         kpl = st.number_input("Kalojen lukumäärä (kpl)", min_value=0, step=1, value=1)
         paino = st.number_input("Suurimman kalan paino (g)", min_value=0, step=10)
     
-    huomio = st.text_area("Lisatiedot (esim. viehe, syvyys tai fiilis)")
+    huomio = st.text_area("Lisatiedot (Viehe, syvyys)")
     
-    nappi = st.form_submit_button("Tallenna reissu pilveen")
+    nappi = st.form_submit_button("Tallenna reissu")
 
 if nappi:
     if laji and paikka:
-        s = hae_saa(paikka)
-        if s:
-            # Luodaan uusi rivi
-            uusi_rivi = pd.DataFrame([{
-                "Pvm": datetime.now().strftime("%d.%m.%Y"),
-                "Kello": datetime.now().strftime("%H:%M"),
-                "Laji": laji,
-                "Paikka": paikka,
-                "Lukumäärä": kpl,
-                "Suurin_kala_g": paino,
-                "Lampotila": s["temp"],
-                "Ilmanpaine": s["pres"],
-                "Saa": s["desc"],
-                "Tuuli_ms": s["w_spd"],
-                "Tuulisuunta": muunna_suunta(s["w_deg"]),
-                "Lisätiedot": huomio
-            }])
-            
-            # Luetaan vanhat ja lisätään uusi
-            vanha_data = conn.read(spreadsheet=SHEET_URL)
-            paivitetty_data = pd.concat([vanha_data, uusi_rivi], ignore_index=True)
-            
-            # Päivitetään Sheets
-            conn.update(spreadsheet=SHEET_URL, data=paivitetty_data)
-            st.success(f"Saalis tallennettu pilveen! Sää: {s['temp']}°C")
-            st.cache_data.clear() # Tyhjennetään välimuisti, jotta uusi rivi näkyy heti
+        # Lasketaan kesto tunteina
+        t1 = combine(pvm, alku)
+        t2 = combine(pvm, loppu)
+        kesto = (t2 - t1).total_seconds() / 3600
+        
+        if kesto < 0:
+            st.error("Lopetusaika ei voi olla ennen aloitusaikaa!")
         else:
-            st.error("Säätietojen haku epäonnistui.")
+            with st.spinner('Haetaan säätietoja ja tallennetaan...'):
+                s = hae_saa(paikka)
+                if s:
+                    # Luodaan uusi rivi
+                    uusi_rivi = pd.DataFrame([{
+                        "Pvm": datetime.now().strftime("%d.%m.%Y"),
+                        "Kello": datetime.now().strftime("%H:%M"),
+                        "Laji": laji,
+                        "Paikka": paikka,
+                        "Lukumäärä": kpl,
+                        "Suurin_kala_g": paino,
+                        "Lampotila": s["temp"],
+                        "Ilmanpaine": s["pres"],
+                        "Saa": s["desc"],
+                        "Tuuli_ms": s["w_spd"],
+                        "Tuulisuunta": muunna_suunta(s["w_deg"]),
+                        "Lisätiedot": huomio
+                    }])
+        
+            
+                    # Luetaan vanhat ja lisätään uusi
+                    vanha_data = conn.read(spreadsheet=SHEET_URL)
+                    paivitetty_data = pd.concat([vanha_data, uusi_rivi], ignore_index=True)
+            
+                    # Päivitetään Sheets
+                    conn.update(spreadsheet=SHEET_URL, data=paivitetty_data)
+                    st.success(f"Reissu tallennettu. Sää: {s['temp']}°C")
+                    st.cache_data.clear() # Tyhjennetään välimuisti, jotta uusi rivi näkyy heti
+                else:
+                    st.error("Säätietojen haku epäonnistui.")
     else:
         st.warning("Syötä paikkakunta ennen tallennusta!")
 
