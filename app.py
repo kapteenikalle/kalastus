@@ -39,13 +39,17 @@ with st.form("kalalomake", clear_on_submit=True):
         paikka = st.text_input("Paikkakunta")
         lajivaihtoehdot = ["Ahven", "Hauki", "Kuha", "Siika", "Ei saalista", "Muu"]
         laji = st.selectbox("Pääasiallinen laji", lajivaihtoehdot)
+        pvm = st.date_input("Päivämäärä", datetime.now())
     
     with col2:
         # Aloitus- ja lopetusajat
         alku = st.time_input("Reissu alkoi", datetime.now().replace(hour=8, minute=0).time())
         loppu = st.time_input("Reissu loppui", datetime.now().time())
+        syonti = st.time_input("Paras syöntiaika", datetime.now().time())
+
+        st.divider()
         kpl = st.number_input("Kalojen lukumäärä (kpl)", min_value=0, step=1, value=1)
-        paino = st.number_input("Suurimman kalan paino (g)", min_value=0, step=10)
+        paino = st.number_input("Suurimman kalan paino (g)", min_value=0, step=50)
     
     huomio = st.text_area("Lisatiedot (Viehe, syvyys)")
     
@@ -67,7 +71,10 @@ if nappi:
                     # Luodaan uusi rivi
                     uusi_rivi = pd.DataFrame([{
                         "Pvm": datetime.now().strftime("%d.%m.%Y"),
-                        "Kello": datetime.now().strftime("%H:%M"),
+                        "Aloitusaika": alku.strftime("%H:%M"),
+                        "Lopetusaika": loppu.strftime("%H:%M"),
+                        "Kesto_h": round(kesto, 1),
+                        "Syontiaika": syonti.strftime("%H:%M"),
                         "Laji": laji,
                         "Paikka": paikka,
                         "Lukumäärä": kpl,
