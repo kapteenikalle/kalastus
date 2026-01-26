@@ -32,15 +32,21 @@ def hae_saa(kaupunki):
     except: return None
 
 st.title("Kalapäiväkirja")
-st.info("Tiedot tallentuvat Google Sheetsiin.")
 
 with st.form("kalalomake", clear_on_submit=True):
-    lajivaihtoehdot = ["Ahven", "Hauki", "Kuha", "Siika","Muu"]
+    col1, col2 = st.columns(2)
+    with col1:
+        paikka = st.text_input("Paikkakunta")
+        lajivaihtoehdot = ["Ahven", "Hauki", "Kuha", "Siika", "Ei saalista (MP)", "Muu"]
+        laji = st.selectbox("Pääasiallinen laji", lajivaihtoehdot)
     
-    laji = st.selectbox("Valitse kalalaji", lajivaihtoehdot)
-    paikka = st.text_input("Paikkakunta")
-    paino = st.number_input("Paino (g)", min_value=0)
-    nappi = st.form_submit_button("Tallenna saalis pilveen")
+    with col2:
+        kpl = st.number_input("Kalojen lukumäärä (kpl)", min_value=0, step=1, value=1)
+        paino = st.number_input("Suurimman kalan paino (g)", min_value=0, step=10)
+    
+    huomio = st.text_area("Lisatiedot (esim. viehe, syvyys tai fiilis)")
+    
+    nappi = st.form_submit_button("Tallenna reissu pilveen")
 
 if nappi:
     if laji and paikka:
@@ -52,12 +58,14 @@ if nappi:
                 "Kello": datetime.now().strftime("%H:%M"),
                 "Laji": laji,
                 "Paikka": paikka,
-                "Paino": paino,
+                "Lukumäärä": kpl,
+                "Suurin_kala_g": paino,
                 "Lampotila": s["temp"],
-                "Paine": s["pres"],
+                "Ilmanpaine": s["pres"],
                 "Saa": s["desc"],
                 "Tuuli_ms": s["w_spd"],
-                "Tuulisuunta": muunna_suunta(s["w_deg"])
+                "Tuulisuunta": muunna_suunta(s["w_deg"]),
+                "Lisätiedot": huomio
             }])
             
             # Luetaan vanhat ja lisätään uusi
@@ -70,6 +78,8 @@ if nappi:
             st.cache_data.clear() # Tyhjennetään välimuisti, jotta uusi rivi näkyy heti
         else:
             st.error("Säätietojen haku epäonnistui.")
+    else:
+        st.warning("Syötä paikkakunta ennen tallennusta!")
 
 # Näytetään data Sheetsistä
 st.divider()
