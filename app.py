@@ -2,7 +2,7 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import requests
 import pandas as pd
-from datetime import datetime, combine, time
+from datetime import datetime, time
 
 # --- ASETUKSET ---
 API_KEY = "78c13424469d15c398ab8fa8c832df15"
