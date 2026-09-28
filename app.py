@@ -12,7 +12,7 @@ try:
 except:
     SHEET_URL = "https://docs.google.com/spreadsheets/d/14Ri5Ox9gHumxU21yIGyKWXPoc5srXaK7joDcwnUuQ6k/edit?usp=sharing"
 
-st.set_page_config(page_title="Kalapäiväkirja", page_icon="🎣")
+st.set_page_config(page_title="Kalapäiväkirja")
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 def muunna_suunta(asteet):
