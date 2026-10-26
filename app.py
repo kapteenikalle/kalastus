@@ -32,7 +32,7 @@ def hae_saa(kaupunki):
         }
     except: return None
 
-st.title("🎣 Kalapäiväkirja")
+st.title("Kalapäiväkirja")
 
 with st.form("kalalomake", clear_on_submit=True):
     col1, col2 = st.columns(2)
